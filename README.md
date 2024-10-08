@@ -57,7 +57,7 @@ The project has the potential to evolve into a more advanced and functional P2P 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Toolnado/Toolnado.git
+   git clone https://github.com/Toolnado/mole.git
 
 2. Build and run the server: 
     ``` bash
