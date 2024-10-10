@@ -77,9 +77,10 @@ func (m *Mole) handle(connChan chan net.Conn) {
 }
 
 func (m *Mole) handleConn(conn net.Conn) {
+	defer conn.Close()
 	m.logger.Info("%s", "handle new conn")
 	protoError := errors.New("mole.handleConn error")
-	defer conn.Close()
+
 	reader := bufio.NewReader(conn)
 	filename, err := reader.ReadString('\n')
 	if err != nil {
