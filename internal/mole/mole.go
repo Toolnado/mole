@@ -16,18 +16,17 @@ import (
 type Mole struct {
 	ctx     context.Context
 	cancel  context.CancelFunc
-	address string
 	logger  *logger.Logger
+	address string
 }
 
-func NewMole(address string) *Mole {
-	ctx, cancel := context.WithCancel(context.Background())
-	logger := logger.New()
+func New(ctx context.Context, address string, l *logger.Logger) *Mole {
+	ctx, cancel := context.WithCancel(ctx)
 	return &Mole{
 		ctx:     ctx,
 		cancel:  cancel,
+		logger:  l,
 		address: address,
-		logger:  logger,
 	}
 }
 
@@ -38,10 +37,12 @@ func (m *Mole) Wait() {
 }
 
 func (m *Mole) Stop() {
+	m.logger.Info("stop mole with address: %s...", m.address)
 	m.cancel()
 }
 
 func (m *Mole) Listen() error {
+	m.logger.Info("start mole with address: %s...", m.address)
 	protoError := errors.New("mole.Listen error")
 	listener, err := net.Listen("tcp", m.address)
 	if err != nil {
@@ -152,6 +153,6 @@ func (m *Mole) SendFile(address string, filepath string) error {
 			return errors.Join(protoError, err)
 		}
 	}
-	m.logger.Info("File %s sent to %s.", filepath, address)
+	m.logger.Info("file %s sent to %s.", filepath, address)
 	return nil
 }
