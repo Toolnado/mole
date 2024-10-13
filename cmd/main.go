@@ -12,10 +12,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	d := transport.NewDefautlDecoder(1024)
 	opts := transport.Options{
 		Listener:  li,
 		Logger:    l,
-		Decoder:   transport.DefautlDecoder,
+		Decoder:   d,
 		Handshake: transport.NOPHandshake,
 		OnPeer:    transport.NOPOnPeer,
 	}

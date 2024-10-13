@@ -5,8 +5,18 @@ import (
 	"mole/model"
 )
 
-func DefautlDecoder(name string, r io.Reader) (model.RPC, error) {
-	buf := make([]byte, 1024)
+type DefautlDecoder struct {
+	bufSize int
+}
+
+func NewDefautlDecoder(bs int) DefautlDecoder {
+	return DefautlDecoder{
+		bufSize: bs,
+	}
+}
+
+func (dd DefautlDecoder) Decode(name string, r io.Reader) (model.RPC, error) {
+	buf := make([]byte, dd.bufSize)
 	msg := model.RPC{PeerAddress: name}
 	if _, err := r.Read(buf); err != nil {
 		if err != io.EOF {

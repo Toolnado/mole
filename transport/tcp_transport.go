@@ -1,9 +1,7 @@
 package transport
 
 import (
-	"io"
 	"mole/logger"
-	"mole/model"
 	"mole/peer"
 	"net"
 	"sync"
@@ -19,7 +17,7 @@ type TCPTransport struct {
 type Options struct {
 	Listener  net.Listener
 	Logger    logger.Logger
-	Decoder   func(name string, r io.Reader) (model.RPC, error)
+	Decoder   Decoder
 	Handshake func(peer.Peer) error
 	OnPeer    func(peer.Peer) error
 }
@@ -61,7 +59,7 @@ func (tcpt *TCPTransport) ListenAndServe() error {
 
 func (tcpt *TCPTransport) Handle(p peer.Peer) {
 	for {
-		if msg, err := tcpt.Options.Decoder(p.Addr(), p.NewReader()); err != nil {
+		if msg, err := tcpt.Options.Decoder.Decode(p.Addr(), p.NewReader()); err != nil {
 			tcpt.Options.Logger.Error("decode message error: %s", err)
 		} else {
 			tcpt.Options.Logger.Info("receive message: %s", msg)
