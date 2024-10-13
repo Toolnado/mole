@@ -17,13 +17,13 @@ func NewDefautlDecoder(bs int) DefautlDecoder {
 
 func (dd DefautlDecoder) Decode(name string, r io.Reader) (model.RPC, error) {
 	buf := make([]byte, dd.bufSize)
-	msg := model.RPC{PeerAddress: name}
 	if _, err := r.Read(buf); err != nil {
 		if err != io.EOF {
 			return model.RPC{}, err
 		}
-	} else {
-		msg.Payload = buf
 	}
-	return msg, nil
+	return model.RPC{
+		PeerAddress: name,
+		Payload:     buf,
+	}, nil
 }
