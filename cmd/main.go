@@ -1,9 +1,10 @@
 package main
 
 import (
-	"mole/logger"
-	"mole/transport"
 	"net"
+
+	"github.com/Toolnado/mole/logger"
+	"github.com/Toolnado/mole/transport"
 )
 
 func main() {

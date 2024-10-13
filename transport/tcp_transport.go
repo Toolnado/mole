@@ -1,10 +1,11 @@
 package transport
 
 import (
-	"mole/logger"
-	"mole/peer"
 	"net"
 	"sync"
+
+	"github.com/Toolnado/mole/logger"
+	"github.com/Toolnado/mole/peer"
 )
 
 type TCPTransport struct {

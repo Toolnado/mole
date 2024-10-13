@@ -2,7 +2,8 @@ package transport
 
 import (
 	"io"
-	"mole/model"
+
+	"github.com/Toolnado/mole/model"
 )
 
 type Transport interface {

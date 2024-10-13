@@ -1,6 +1,6 @@
 package transport
 
-import "mole/peer"
+import "github.com/Toolnado/mole/peer"
 
 func NOPHandshake(peer.Peer) error {
 	return nil
