@@ -1,11 +1,25 @@
 package main
 
 import (
-	"context"
-	"mole/internal/app"
+	"mole/logger"
+	"mole/transport"
+	"net"
 )
 
 func main() {
-	instance := app.New(context.Background())
-	instance.Run()
+	l := logger.New()
+	li, err := net.Listen("tcp", ":3000")
+	if err != nil {
+		panic(err)
+	}
+	opts := transport.Options{
+		Listener:  li,
+		Logger:    l,
+		Decoder:   transport.DefautlDecoder,
+		Handshake: transport.NOPHandshake,
+		OnPeer:    transport.NOPOnPeer,
+	}
+	transport := transport.NewTCPTransport(opts)
+	transport.ListenAndServe()
+	select {}
 }
