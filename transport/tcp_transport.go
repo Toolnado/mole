@@ -53,13 +53,13 @@ func (tcpt *TCPTransport) ListenAndServe() error {
 			continue
 		}
 
-		go tcpt.Handle(&tcpPeer)
+		go tcpt.handle(&tcpPeer)
 	}
 }
 
-func (tcpt *TCPTransport) Handle(p peer.Peer) {
+func (tcpt *TCPTransport) handle(p peer.Peer) {
 	for {
-		if msg, err := tcpt.Options.Decoder.Decode(p.Addr(), p.NewReader()); err != nil {
+		if msg, err := tcpt.Options.Decoder.Decode(p.Addr(), p.Reader()); err != nil {
 			tcpt.Options.Logger.Error("decode message error: %s", err)
 		} else {
 			tcpt.Options.Logger.Info("receive message: %s", msg)

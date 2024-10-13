@@ -7,5 +7,5 @@ import (
 type Peer interface {
 	Addr() string
 	Close() error
-	NewReader() io.Reader
+	Reader() io.Reader
 }

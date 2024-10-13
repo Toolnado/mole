@@ -25,6 +25,6 @@ func (tcpp *TCPPeer) Addr() string {
 	return tcpp.addr
 }
 
-func (tcpp TCPPeer) NewReader() io.Reader {
+func (tcpp TCPPeer) Reader() io.Reader {
 	return tcpp.conn
 }
