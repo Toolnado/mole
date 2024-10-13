@@ -8,20 +8,21 @@ import (
 )
 
 func main() {
-	l := logger.New()
-	li, err := net.Listen("tcp", ":3000")
+	log := logger.New()
+	listener, err := net.Listen("tcp", ":3000")
 	if err != nil {
 		panic(err)
 	}
-	d := transport.NewDefautlDecoder(1024)
-	opts := transport.Options{
-		Listener:  li,
-		Logger:    l,
-		Decoder:   d,
-		Handshake: transport.NOPHandshake,
-		OnPeer:    transport.NOPOnPeer,
-	}
-	transport := transport.NewTCPTransport(opts)
+	decoder := transport.NewDefautlDecoder(1024)
+	transport := transport.NewTCPTransport(
+		transport.NewComponents(
+			listener,
+			log,
+			decoder,
+			transport.NopSecurity{},
+			transport.NopAcceptance{},
+		),
+	)
 	transport.ListenAndServe()
 	select {}
 }

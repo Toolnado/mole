@@ -4,53 +4,45 @@ import (
 	"net"
 	"sync"
 
-	"github.com/Toolnado/mole/logger"
+	"github.com/Toolnado/mole/interfaces"
 	"github.com/Toolnado/mole/peer"
 )
 
 type TCPTransport struct {
-	Address string
-	Options Options
-	mu      sync.RWMutex
-	peers   map[net.Addr]peer.Peer
+	Address    string
+	Components Components
+	mu         sync.RWMutex
+	peers      map[net.Addr]interfaces.Peer
 }
 
-type Options struct {
-	Listener  net.Listener
-	Logger    logger.Logger
-	Decoder   Decoder
-	Handshake func(peer.Peer) error
-	OnPeer    func(peer.Peer) error
-}
-
-func NewTCPTransport(opts Options) TCPTransport {
+func NewTCPTransport(opts Components) TCPTransport {
 	return TCPTransport{
-		Address: opts.Listener.Addr().String(),
-		Options: opts,
+		Address:    opts.Listener.Addr().String(),
+		Components: opts,
 
 		mu:    sync.RWMutex{},
-		peers: make(map[net.Addr]peer.Peer),
+		peers: make(map[net.Addr]interfaces.Peer),
 	}
 }
 
 func (tcpt *TCPTransport) ListenAndServe() error {
 	for {
-		conn, err := tcpt.Options.Listener.Accept()
+		conn, err := tcpt.Components.Listener.Accept()
 		if err != nil {
-			tcpt.Options.Logger.Error("accept connection error: %s", err)
+			tcpt.Components.Logger.Error("accept connection error: %s", err)
 			continue
 		}
-		tcpt.Options.Logger.Info("accept new connection: %s", conn.RemoteAddr().String())
+		tcpt.Components.Logger.Info("accept new connection: %s", conn.RemoteAddr().String())
 
 		tcpPeer := peer.NewTCPPeer(conn)
 
-		if err = tcpt.Options.Handshake(&tcpPeer); err != nil {
-			tcpt.Options.Logger.Error("handshake connection error: %s", err)
+		if err = tcpt.Components.Security.Handshake(&tcpPeer); err != nil {
+			tcpt.Components.Logger.Error("handshake connection error: %s", err)
 			continue
 		}
 
-		if err = tcpt.Options.OnPeer(&tcpPeer); err != nil {
-			tcpt.Options.Logger.Error("on peer connection error: %s", err)
+		if err = tcpt.Components.Acceptance.OnPeer(&tcpPeer); err != nil {
+			tcpt.Components.Logger.Error("on peer connection error: %s", err)
 			continue
 		}
 
@@ -58,12 +50,12 @@ func (tcpt *TCPTransport) ListenAndServe() error {
 	}
 }
 
-func (tcpt *TCPTransport) handle(p peer.Peer) {
+func (tcpt *TCPTransport) handle(p interfaces.Peer) {
 	for {
-		if msg, err := tcpt.Options.Decoder.Decode(p.Addr(), p.Reader()); err != nil {
-			tcpt.Options.Logger.Error("decode message error: %s", err)
+		if msg, err := tcpt.Components.Decoder.Decode(p.Addr(), p.Reader()); err != nil {
+			tcpt.Components.Logger.Error("decode message error: %s", err)
 		} else {
-			tcpt.Options.Logger.Info("receive message: %s", msg)
+			tcpt.Components.Logger.Info("receive message: %s", msg)
 		}
 	}
 }
